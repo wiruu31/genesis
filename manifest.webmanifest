@@ -1,0 +1,14 @@
+{
+  "name": "Genesis, belajar Bitcoin",
+  "short_name": "Genesis",
+  "description": "Pelajaran, kuis, dan lab simulasi Bitcoin dalam Bahasa Indonesia.",
+  "lang": "id",
+  "start_url": "./genesis.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#FAF6EE",
+  "theme_color": "#FAF6EE",
+  "icons": [
+    { "src": "genesis-ikon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

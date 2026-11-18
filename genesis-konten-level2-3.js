@@ -1,0 +1,298 @@
+/* Genesis v2.0.0, genesis-konten-level2-3.js
+ * Konten Level 2 (jaringan dan kriptografi dasar) dan Level 3 (arsitektur Bitcoin).
+ */
+(function (root) {
+  'use strict';
+  const D = root.GenesisData || (typeof require !== 'undefined' ? require('./genesis-data.js') : null);
+
+  const lessons = [
+    /* ===================== LEVEL 2 ===================== */
+    {
+      id: 'l2-01', slug: 'komputer-dan-jaringan', level: 2, order: 1, title: 'Komputer dan jaringan', minutes: 8,
+      objectives: ['Menjelaskan bagaimana dua komputer bertukar pesan lewat jaringan.', 'Membedakan klien, server, dan peer.', 'Memahami bahwa jaringan bisa terlambat, putus, atau berisi pesan palsu.'],
+      prerequisites: [],
+      hook: 'Saat kamu mengirim pesan WhatsApp, pesan itu tidak terbang langsung ke ponsel temanmu. Ia melewati banyak perangkat perantara, dan salah satunya bisa saja lambat atau mati.',
+      sections: [
+        { h: 'Pesan dipecah menjadi paket', p: ['Komputer tidak mengirim satu pesan utuh. Data dipecah menjadi potongan kecil bernama **paket**, dan tiap paket menempuh jalannya sendiri lalu disusun ulang di tujuan.', 'Setiap perangkat di jaringan punya alamat. Alamat itu dipakai supaya paket tahu ke mana harus pergi.'] },
+        { h: 'Klien, server, dan peer', p: ['**Klien** meminta sesuatu, **server** menjawab. Peramban yang membuka sebuah situs adalah klien, komputer yang menyimpan situs itu adalah server.', 'Ada juga model **peer**: dua komputer berperan sama, saling meminta dan saling menjawab. Model ini penting nanti untuk Bitcoin.'] },
+        { h: 'Jaringan tidak bisa dipercaya sepenuhnya', p: ['Paket bisa hilang, datang terlambat, datang dua kali, atau diubah oleh pihak di tengah jalan. Karena itu, rancangan sistem uang digital harus mengasumsikan bahwa pesan yang masuk belum tentu asli.', 'Pertanyaan yang akan terus muncul di Level 2: bagaimana penerima tahu pesan ini utuh dan benar-benar dari pengirim yang diklaim?'], visual: 'p2p' },
+      ],
+      technical: { title: 'Versi teknis: lapisan protokol', p: ['Jaringan internet disusun berlapis. Di bagian bawah ada pengalamatan dan pengiriman paket (IP), di atasnya ada protokol yang mengatur keandalan pengiriman (TCP) atau pengiriman cepat tanpa jaminan (UDP).', 'Node Bitcoin berbicara lewat koneksi TCP dengan pesan yang format dan urutannya ditetapkan protokol jaringan Bitcoin. Detailnya bisa dibaca di dokumentasi pengembang.'] },
+      misconceptions: [{ salah: 'Kalau pesan sampai, berarti pasti dari pengirim yang tertulis dan isinya tidak berubah.', benar: 'Jaringan hanya mengantar paket. Keaslian dan keutuhan harus dibuktikan dengan cara lain, misalnya tanda tangan digital.' }],
+      summary: ['Data dikirim sebagai paket lewat banyak perantara.', 'Model klien-server berbeda dengan model peer.', 'Pesan di jaringan bisa terlambat, hilang, atau palsu, jadi keaslian harus dibuktikan terpisah.'],
+      quiz: [
+        { id: 'l2-01-q1', q: 'Apa yang dilakukan jaringan terhadap pesan besar saat mengirimnya?', options: ['Mengirim sebagai satu blok utuh', 'Memecahnya menjadi paket yang disusun ulang di tujuan', 'Mengenkripsi seluruhnya otomatis', 'Menyimpannya di server pusat dulu'], answer: 1, explain: 'Data dipecah menjadi paket dan disusun ulang di tujuan.' },
+        { id: 'l2-01-q2', q: 'Apa beda utama model klien-server dengan model peer?', options: ['Peer selalu lebih cepat', 'Pada peer, dua pihak berperan setara; pada klien-server, satu pihak meminta dan satu menjawab', 'Klien-server tidak memakai jaringan', 'Peer wajib memakai enkripsi'], answer: 1, explain: 'Pada model peer, tiap komputer bisa meminta sekaligus menjawab.' },
+        { id: 'l2-01-q3', q: 'Sebuah pesan "kirim 1 koin ke Budi" tiba lewat jaringan. Apa kesimpulan yang tepat?', options: ['Pesan itu pasti asli karena sampai', 'Pesan itu belum terbukti asli, perlu bukti tambahan seperti tanda tangan', 'Pesan itu pasti palsu', 'Pesan itu sah kalau tiba paling dulu'], answer: 1, explain: 'Jaringan tidak menjamin keaslian. Bukti keaslian harus datang dari mekanisme lain.', application: true },
+      ],
+      labs: [], glossary: ['g-jaringan', 'g-p2p'], sources: ['src-devdocs'],
+    },
+    {
+      id: 'l2-02', slug: 'terpusat-vs-terdesentralisasi', level: 2, order: 2, title: 'Terpusat vs terdesentralisasi', minutes: 8,
+      objectives: ['Membedakan sistem terpusat, terdesentralisasi, dan terdistribusi.', 'Menyebutkan satu keuntungan dan satu biaya dari tiap model.', 'Menjelaskan titik tunggal kegagalan.'],
+      prerequisites: ['l2-01'],
+      hook: 'Kalau server sebuah bank mati, aplikasinya tidak bisa dipakai. Kalau satu komputer dari ribuan komputer pemelihara Bitcoin mati, jaringan tetap jalan.',
+      sections: [
+        { h: 'Satu pusat menentukan', p: ['Pada sistem **terpusat**, satu pihak memegang catatan dan membuat aturan. Bank menyimpan saldo kamu, dan hanya bank yang bisa mengubahnya.', 'Keuntungannya: sederhana, cepat memperbaiki salah, ada pihak yang bisa dimintai tanggung jawab. Biayanya: kamu mempercayai pihak itu, dan ia menjadi titik tunggal kegagalan.'] },
+        { h: 'Banyak pihak memegang salinan', p: ['Pada sistem **terdesentralisasi**, banyak pihak yang tidak saling bergantung menjalankan aturan yang sama, dan tidak ada satu pihak yang bisa memutuskan sendiri.', 'Biayanya nyata: lebih lambat, lebih rumit, dan butuh cara agar semua pihak sepakat pada catatan yang sama.'] },
+        { h: 'Ini spektrum, bukan dua kotak', p: ['Banyak sistem berada di antara keduanya. Bitcoin punya aturan yang ditegakkan banyak pihak, tetapi penambang, pengembang, dan pengguna punya pengaruh yang tidak sama besar. Kata "terdesentralisasi" menggambarkan tingkat, bukan label mutlak.'], visual: 'ledger' },
+      ],
+      technical: { title: 'Versi teknis: titik tunggal kegagalan dan masalah kesepakatan', p: ['Titik tunggal kegagalan adalah komponen yang jika rusak, seluruh sistem berhenti. Sistem terdistribusi mengurangi risiko ini dengan menyalin tugas ke banyak mesin.', 'Menyalin saja belum cukup. Jika salinan berbeda, harus ada aturan untuk memilih mana yang berlaku. Bitcoin memakai proof of work dan aturan rantai dengan kerja terbanyak untuk itu, dibahas di Level 5.'] },
+      misconceptions: [{ salah: 'Terdesentralisasi berarti tidak ada yang berpengaruh sama sekali.', benar: 'Pengaruh tetap ada dan tidak merata. Yang berubah adalah tidak ada satu pihak yang bisa mengubah catatan sendirian.' }],
+      summary: ['Terpusat: satu pihak memegang catatan dan aturan.', 'Terdesentralisasi: banyak pihak menjalankan aturan yang sama tanpa satu penentu.', 'Tiap model punya biaya, dan keduanya adalah spektrum.'],
+      quiz: [
+        { id: 'l2-02-q1', q: 'Apa itu titik tunggal kegagalan?', options: ['Server paling cepat', 'Komponen yang jika rusak membuat seluruh sistem berhenti', 'Pengguna pertama sebuah sistem', 'Salinan data cadangan'], answer: 1, explain: 'Satu komponen yang menentukan kelangsungan seluruh sistem.' },
+        { id: 'l2-02-q2', q: 'Mana yang merupakan biaya sistem terdesentralisasi?', options: ['Dipercayakan penuh ke satu pihak', 'Butuh cara agar banyak pihak sepakat pada catatan yang sama', 'Pasti lebih murah', 'Tidak punya aturan'], answer: 1, explain: 'Kesepakatan antar banyak pihak itu rumit dan lebih lambat.' },
+        { id: 'l2-02-q3', q: 'Sebuah aplikasi pembayaran mati karena servernya rusak, semua pengguna tidak bisa transaksi. Ini contoh apa?', options: ['Desentralisasi yang berhasil', 'Titik tunggal kegagalan pada sistem terpusat', 'Serangan proof of work', 'Fork'], answer: 1, explain: 'Satu server yang mati menghentikan semuanya, ciri sistem terpusat.', application: true },
+      ],
+      labs: [], glossary: ['g-terpusat', 'g-terdesentralisasi'], sources: ['src-whitepaper'],
+    },
+    {
+      id: 'l2-03', slug: 'jaringan-peer-to-peer', level: 2, order: 3, title: 'Jaringan peer-to-peer', minutes: 8,
+      objectives: ['Menjelaskan cara peer menemukan dan terhubung satu sama lain.', 'Memahami bahwa informasi menyebar dari peer ke peer.', 'Menyadari bahwa tiap peer menyimpan pandangan lokalnya sendiri.'],
+      prerequisites: ['l2-02'],
+      hook: 'Bayangkan kabar yang menyebar lewat grup chat berantai. Tidak ada pusat penyiaran, tetapi dalam beberapa menit sebagian besar anggota sudah tahu.',
+      sections: [
+        { h: 'Peer saling terhubung', p: ['Di jaringan **peer-to-peer**, tiap peer terhubung ke beberapa peer lain, bukan ke satu server. Jaringan terbentuk dari sambungan-sambungan itu.', 'Peer baru perlu mengetahui setidaknya satu peer untuk memulai, lalu mempelajari peer lain dari peer tersebut.'] },
+        { h: 'Kabar menyebar bertahap', p: ['Ketika sebuah peer menerima informasi baru, ia meneruskannya ke peer yang ia kenal. Penyebaran ini butuh waktu, jadi pada satu saat, peer yang berbeda bisa punya pengetahuan yang berbeda.', 'Konsekuensinya: dua peer bisa sama-sama jujur namun belum melihat hal yang sama.'] },
+        { h: 'Tidak ada yang bisa dipercaya buta', p: ['Peer yang meneruskan informasi bisa saja berbohong. Karena itu peer memeriksa sendiri informasi yang datang berdasarkan aturan bersama, bukan berdasarkan siapa pengirimnya.'], visual: 'p2p' },
+      ],
+      technical: { title: 'Versi teknis: penemuan peer', p: ['Node Bitcoin menemukan peer awal lewat daftar alamat yang ditanam di perangkat lunak atau lewat DNS seed, lalu bertukar daftar alamat peer dengan pesan khusus.', 'Setiap koneksi berjalan dua arah dan node memeriksa tiap pesan terhadap aturan konsensus sebelum meneruskannya.'] },
+      misconceptions: [{ salah: 'Di jaringan peer-to-peer, semua peer selalu melihat data yang persis sama pada saat yang sama.', benar: 'Penyebaran butuh waktu. Pada satu saat, pandangan tiap peer bisa sedikit berbeda.' }],
+      summary: ['Peer terhubung ke beberapa peer lain tanpa server pusat.', 'Informasi menyebar bertahap, jadi pandangan tiap peer bisa berbeda sebentar.', 'Peer memeriksa sendiri informasi yang masuk.'],
+      quiz: [
+        { id: 'l2-03-q1', q: 'Bagaimana peer baru biasanya bergabung ke jaringan?', options: ['Mendaftar ke server pusat', 'Mengenal minimal satu peer lalu belajar peer lain darinya', 'Membeli izin', 'Menunggu diundang semua peer'], answer: 1, explain: 'Cukup satu titik awal, sisanya dipelajari dari peer.' },
+        { id: 'l2-03-q2', q: 'Kenapa dua peer jujur bisa punya pandangan berbeda sesaat?', options: ['Salah satu pasti curang', 'Penyebaran informasi butuh waktu', 'Mereka memakai hash berbeda', 'Jaringan tidak bisa dipakai'], answer: 1, explain: 'Informasi belum sampai ke semua peer pada waktu yang sama.' },
+        { id: 'l2-03-q3', q: 'Sebuah peer mengirim kamu kabar bahwa sebuah transaksi valid. Apa yang sebaiknya node lakukan?', options: ['Langsung percaya karena peer itu lama', 'Memeriksa sendiri transaksi itu terhadap aturan', 'Meneruskan tanpa memeriksa', 'Menolak semua kabar dari peer'], answer: 1, explain: 'Node memverifikasi sendiri, tidak mengandalkan reputasi pengirim.', application: true },
+      ],
+      labs: [], glossary: ['g-p2p', 'g-node'], sources: ['src-devdocs', 'src-whitepaper'],
+    },
+    {
+      id: 'l2-04', slug: 'kriptografi', level: 2, order: 4, title: 'Kriptografi', minutes: 8,
+      objectives: ['Menjelaskan apa yang dicakup kriptografi selain menyembunyikan pesan.', 'Membedakan kerahasiaan, keutuhan, dan keaslian.', 'Menempatkan hash dan tanda tangan dalam peta kriptografi Bitcoin.'],
+      prerequisites: ['l2-03'],
+      hook: 'Orang sering mengira kriptografi itu soal merahasiakan pesan. Di Bitcoin, hampir tidak ada yang dirahasiakan: yang dijaga adalah keutuhan dan keaslian.',
+      sections: [
+        { h: 'Tiga hal yang dijaga', p: ['**Kerahasiaan**: hanya pihak tertentu yang bisa membaca. **Keutuhan**: isi tidak berubah diam-diam. **Keaslian**: kamu tahu siapa yang membuatnya.', 'Transaksi Bitcoin sengaja bisa dibaca publik. Yang dijaga adalah keutuhan (lewat hash) dan keaslian izin belanja (lewat tanda tangan).'] },
+        { h: 'Dua alat utama di Bitcoin', p: ['**Fungsi hash** mengubah data apa pun menjadi sidik jari berukuran tetap. **Kriptografi kunci publik** memberi sepasang kunci: satu untuk membuat tanda tangan, satu untuk memeriksanya.', 'Dua pelajaran berikutnya membahas keduanya satu per satu.'] },
+        { h: 'Bukan sulap', p: ['Keamanan kriptografi bertumpu pada soal matematika yang sejauh ini sangat mahal diselesaikan tanpa kuncinya. Itu bukan bukti mutlak, tetapi dasar yang dipakai luas dan terus diuji.'], visual: 'hashflow' },
+      ],
+      technical: { title: 'Versi teknis: primitif yang dipakai Bitcoin', p: ['Bitcoin memakai SHA-256 (dua kali berturut-turut pada banyak tempat), RIPEMD-160 untuk alamat, dan ECDSA pada kurva secp256k1 untuk tanda tangan. Versi lanjutan memakai tanda tangan Schnorr.', 'Spesifikasi SHA-256 ada di FIPS 180-4 dan parameter kurva ada di SEC 2.'] },
+      misconceptions: [{ salah: 'Kriptografi di Bitcoin berarti semua transaksi disembunyikan.', benar: 'Transaksi dan saldo alamat bisa dilihat siapa saja. Kriptografi dipakai untuk membuktikan keutuhan dan keaslian, bukan menyembunyikan.' }],
+      summary: ['Kriptografi menjaga kerahasiaan, keutuhan, dan keaslian.', 'Bitcoin terutama memakai hash dan tanda tangan, bukan penyembunyian.', 'Keamanannya bertumpu pada soal matematika yang mahal diselesaikan tanpa kunci.'],
+      quiz: [
+        { id: 'l2-04-q1', q: 'Mana yang termasuk keutuhan?', options: ['Hanya pemilik yang bisa membaca', 'Isi tidak bisa diubah tanpa ketahuan', 'Pengirim bisa disembunyikan', 'Data selalu terenkripsi'], answer: 1, explain: 'Keutuhan berarti perubahan akan terdeteksi.' },
+        { id: 'l2-04-q2', q: 'Untuk apa tanda tangan digital dipakai di Bitcoin?', options: ['Menyembunyikan jumlah transaksi', 'Membuktikan pemilik kunci mengizinkan pengeluaran', 'Mempercepat jaringan', 'Menghitung fee'], answer: 1, explain: 'Tanda tangan membuktikan izin dari pemegang kunci privat.' },
+        { id: 'l2-04-q3', q: 'Temanmu bilang "transaksi Bitcoin dienkripsi jadi tidak bisa dilihat orang". Tanggapan yang tepat?', options: ['Benar, semuanya tersembunyi', 'Keliru, transaksi bisa dibaca publik; kriptografi menjaga keutuhan dan keaslian', 'Benar, tapi hanya untuk penambang', 'Keliru, tidak ada kriptografi di Bitcoin'], answer: 1, explain: 'Data transaksi bersifat publik. Hash dan tanda tangan memberi keutuhan dan keaslian.', application: true },
+      ],
+      labs: [], glossary: ['g-kriptografi', 'g-hash', 'g-tanda-tangan'], sources: ['src-fips180', 'src-sec2'],
+    },
+    {
+      id: 'l2-05', slug: 'fungsi-hash', level: 2, order: 5, title: 'Fungsi hash', minutes: 10,
+      objectives: ['Menjelaskan sifat dasar fungsi hash.', 'Mengamati bahwa perubahan kecil pada input mengubah total hasilnya.', 'Membedakan hash dari enkripsi.'],
+      prerequisites: ['l2-04'],
+      hook: 'Ubah satu huruf dari sebuah kalimat panjang, dan sidik jarinya berubah seluruhnya. Itu sifat yang membuat rantai blok bisa mendeteksi perubahan.',
+      sections: [
+        { h: 'Sidik jari data', p: ['**Fungsi hash** menerima data apa pun dan mengeluarkan nilai berukuran tetap. SHA-256 selalu mengeluarkan 256 bit, biasanya ditulis sebagai 64 karakter heksadesimal.', 'Input yang sama selalu memberi hasil yang sama, jadi hash bisa dipakai membandingkan data tanpa membandingkan seluruh isinya.'] },
+        { h: 'Perubahan kecil, hasil berbeda total', p: ['Mengubah satu karakter menghasilkan hash yang tampak tidak berhubungan dengan hash sebelumnya. Kamu tidak bisa menebak arah perubahannya.', 'Coba sendiri di lab Hash playground.'], visual: 'hashflow' },
+        { h: 'Satu arah, dan bukan enkripsi', p: ['Dari hash, tidak ada cara praktis untuk menemukan input aslinya selain menebak. Hash juga **bukan enkripsi**: tidak ada kunci dan tidak ada proses membuka kembali.', 'Karena itu, memberi hash pada sebuah kata sandi tidak sama dengan menyembunyikannya. Kata sandi lemah tetap bisa ditebak dengan mencoba banyak kandidat.'] },
+      ],
+      technical: { title: 'Versi teknis: sifat yang dibutuhkan', p: ['Sifat yang diharapkan dari hash kriptografis: tahan pra-gambar (sulit menemukan input dari hash), tahan pra-gambar kedua, dan tahan tabrakan (sulit menemukan dua input berbeda dengan hash sama).', 'Bitcoin memakai SHA-256 dua kali berturut-turut (sering ditulis SHA-256d) untuk ID transaksi dan hash header blok. Spesifikasi SHA-256 ada di FIPS 180-4.'] },
+      misconceptions: [{ salah: 'Hash adalah enkripsi, jadi bisa dibuka lagi dengan kunci yang tepat.', benar: 'Hash tidak punya kunci dan tidak bisa dibalik. Ia hanya sidik jari dari data.' }],
+      summary: ['Hash mengubah data apa pun menjadi nilai berukuran tetap.', 'Input sama memberi hasil sama, perubahan kecil memberi hasil yang berbeda total.', 'Hash satu arah dan bukan enkripsi.'],
+      quiz: [
+        { id: 'l2-05-q1', q: 'Apa yang terjadi jika satu karakter input SHA-256 diubah?', options: ['Hash berubah sedikit saja', 'Hash berubah total dan tidak bisa ditebak', 'Hash tetap sama', 'Hash menjadi lebih panjang'], answer: 1, explain: 'Perubahan kecil pada input mengubah hash secara menyeluruh.' },
+        { id: 'l2-05-q2', q: 'Berapa panjang keluaran SHA-256 dalam bit?', options: ['128', '160', '256', '512'], answer: 2, explain: 'SHA-256 menghasilkan 256 bit, sesuai spesifikasi FIPS 180-4.' },
+        { id: 'l2-05-q3', q: 'Apa beda hash dan enkripsi?', options: ['Tidak ada beda', 'Enkripsi bisa dibuka dengan kunci, hash tidak punya jalan balik', 'Hash lebih lama diproses', 'Enkripsi tidak butuh kunci'], answer: 1, explain: 'Enkripsi dapat dibalik dengan kunci, hash dirancang satu arah.' },
+        { id: 'l2-05-q4', q: 'Kamu menyimpan hash sebuah file, lalu kemudian menghitung ulang hash file itu dan hasilnya berbeda. Kesimpulan paling masuk akal?', options: ['Hash pasti rusak', 'File telah berubah sejak hash dihitung', 'Komputer salah menghitung angka', 'File itu terenkripsi'], answer: 1, explain: 'Input sama selalu memberi hash sama, jadi hash berbeda berarti input berbeda.', application: true },
+      ],
+      labs: ['lab-hash'], glossary: ['g-hash'], sources: ['src-fips180', 'src-devdocs'],
+    },
+    {
+      id: 'l2-06', slug: 'kunci-publik-dan-privat', level: 2, order: 6, title: 'Kunci publik dan kunci privat', minutes: 10,
+      objectives: ['Menjelaskan peran kunci privat dan kunci publik.', 'Menyebut bahwa kunci publik diturunkan dari kunci privat, bukan sebaliknya.', 'Memahami bahaya membocorkan kunci privat.'],
+      prerequisites: ['l2-05'],
+      hook: 'Kamu boleh menyebarkan kunci publikmu ke siapa saja. Kunci privatmu tidak boleh keluar dari tanganmu, karena siapa pun yang memegangnya bisa bertindak seolah dia kamu.',
+      sections: [
+        { h: 'Sepasang kunci yang berhubungan', p: ['**Kunci privat** adalah angka acak yang sangat besar. **Kunci publik** dihitung dari kunci privat lewat operasi matematika pada kurva elips.', 'Menghitung dari privat ke publik mudah. Menebak privat dari publik, sejauh ini, tidak praktis.'] },
+        { h: 'Pembagian tugas', p: ['Kunci privat dipakai **membuat** tanda tangan. Kunci publik dipakai **memeriksa** tanda tangan itu. Orang lain cukup punya kunci publikmu untuk memastikan sebuah tanda tangan memang berasal dari pemegang kunci privatmu.', 'Pada Bitcoin, kunci publik atau hash-nya terikat ke alamat tempat dana diterima.'] },
+        { h: 'Konsekuensi memegang kunci', p: ['Tidak ada pihak yang bisa memulihkan kunci privat yang hilang, dan tidak ada pihak yang bisa membatalkan pengeluaran yang ditandatangani dengan kunci yang bocor.', 'Karena itu Genesis tidak pernah meminta kunci privat asli. Kunci di lab adalah kunci uji sementara yang dibuat di browsermu dan hilang saat halaman ditutup.'] },
+      ],
+      technical: { title: 'Versi teknis: secp256k1', p: ['Bitcoin memakai kurva elips secp256k1. Kunci privat adalah bilangan bulat antara 1 dan n minus 1, dengan n adalah orde kurva. Kunci publik adalah titik hasil perkalian titik dasar G dengan kunci privat.', 'Kunci publik biasa ditulis dalam bentuk terkompresi (33 byte) atau tak terkompresi (65 byte). Parameter lengkap ada di SEC 2.'] },
+      misconceptions: [{ salah: 'Kunci publik bisa dipakai untuk menghitung kunci privat kalau komputernya cukup cepat dalam waktu singkat.', benar: 'Dengan pengetahuan dan perangkat keras yang diketahui publik saat ini, hal itu tidak praktis. Tetap, keamanan dijaga dengan tidak pernah membagikan kunci privat.' }],
+      summary: ['Kunci publik dihitung dari kunci privat, bukan sebaliknya.', 'Kunci privat membuat tanda tangan, kunci publik memeriksanya.', 'Kunci privat yang hilang atau bocor tidak bisa dipulihkan atau dibatalkan oleh pihak mana pun.'],
+      quiz: [
+        { id: 'l2-06-q1', q: 'Kunci mana yang boleh dibagikan ke publik?', options: ['Kunci privat', 'Kunci publik', 'Keduanya', 'Tidak keduanya'], answer: 1, explain: 'Kunci publik memang untuk dibagikan, kunci privat harus tetap rahasia.' },
+        { id: 'l2-06-q2', q: 'Kunci mana yang dipakai membuat tanda tangan?', options: ['Kunci publik', 'Kunci privat', 'Hash header', 'Nonce mining'], answer: 1, explain: 'Penandatanganan memakai kunci privat.' },
+        { id: 'l2-06-q3', q: 'Sebuah situs meminta kamu memasukkan kunci privat dompetmu "untuk verifikasi". Apa yang tepat?', options: ['Memasukkannya karena resmi', 'Menolak, verifikasi tidak pernah butuh kunci privat', 'Memasukkan separuhnya saja', 'Mengirim via email'], answer: 1, explain: 'Verifikasi hanya butuh kunci publik. Meminta kunci privat adalah tanda penipuan.', application: true },
+      ],
+      labs: ['lab-signature'], glossary: ['g-kunci-privat', 'g-kunci-publik'], sources: ['src-sec2', 'src-masteringbitcoin'],
+    },
+    {
+      id: 'l2-07', slug: 'tanda-tangan-digital', level: 2, order: 7, title: 'Tanda tangan digital', minutes: 10,
+      objectives: ['Menjelaskan alur membuat dan memeriksa tanda tangan digital.', 'Menunjukkan bahwa tanda tangan terikat pada isi pesan.', 'Membedakan nonce tanda tangan dari nonce mining.'],
+      prerequisites: ['l2-06'],
+      hook: 'Tanda tangan di kertas sama untuk setiap dokumen. Tanda tangan digital berbeda: ia dihitung dari isi pesan, jadi mengubah satu huruf membuatnya tidak lagi cocok.',
+      sections: [
+        { h: 'Alurnya', p: ['Pemilik kunci menghitung hash dari pesan, lalu memakai kunci privatnya untuk menghasilkan tanda tangan dari hash itu. Penerima memeriksa dengan pesan, tanda tangan, dan kunci publik.', 'Hasilnya hanya dua kemungkinan: cocok atau tidak cocok.'], visual: 'sigflow' },
+        { h: 'Terikat pada isi pesan', p: ['Jika pesan diubah sedikit pun, hash-nya berubah, dan tanda tangan lama tidak lagi lolos pemeriksaan. Penyerang tidak bisa memindahkan tanda tangan ke pesan lain.', 'Karena itu dalam transaksi Bitcoin, yang ditandatangani adalah ringkasan data transaksi menurut aturan sighash, bukan sekadar "hash sebelumnya ditambah kunci publik penerima".'] },
+        { h: 'Dua nonce yang berbeda', p: ['ECDSA memakai angka sekali pakai bernama nonce tanda tangan. Itu tidak ada hubungannya dengan nonce mining di header blok, yang dipakai untuk mencari hash di bawah target.', 'Nonce tanda tangan tidak boleh diulang atau bisa ditebak, karena itu bisa membocorkan kunci privat. Kunci uji di Genesis memakai nonce deterministik menurut RFC 6979.'] },
+      ],
+      technical: { title: 'Versi teknis: ECDSA', p: ['Tanda tangan ECDSA adalah pasangan bilangan (r, s). r berasal dari titik hasil perkalian nonce k dengan G, s dihitung dari hash pesan, kunci privat, r, dan k.', 'Pemeriksa menghitung ulang titik dari hash pesan, r, s, dan kunci publik lalu membandingkan koordinatnya dengan r. Bitcoin juga mensyaratkan s dalam bentuk rendah ("low-s") pada transaksi standar. Taproot memakai tanda tangan Schnorr, spesifikasinya ada di BIP.'] },
+      misconceptions: [{ salah: 'Nonce di tanda tangan sama dengan nonce yang dicari penambang.', benar: 'Keduanya hanya kebetulan sama namanya. Nonce ECDSA adalah rahasia sekali pakai, nonce mining adalah kolom 4 byte di header yang diubah-ubah.' }],
+      summary: ['Kunci privat membuat tanda tangan dari hash pesan, kunci publik memeriksanya.', 'Tanda tangan terikat pada isi pesan, perubahan sekecil apa pun membuatnya gagal.', 'Nonce tanda tangan dan nonce mining adalah dua hal yang berbeda.'],
+      quiz: [
+        { id: 'l2-07-q1', q: 'Siapa yang membuat tanda tangan dan siapa yang memeriksanya?', options: ['Kunci publik membuat, kunci privat memeriksa', 'Kunci privat membuat, kunci publik memeriksa', 'Keduanya memakai kunci privat', 'Keduanya memakai hash'], answer: 1, explain: 'Pemegang kunci privat menandatangani, siapa pun dengan kunci publik bisa memeriksa.' },
+        { id: 'l2-07-q2', q: 'Apa yang terjadi bila pesan diubah setelah ditandatangani?', options: ['Tanda tangan tetap lolos', 'Pemeriksaan gagal', 'Kunci privat bocor', 'Tanda tangan otomatis diperbarui'], answer: 1, explain: 'Hash pesan berubah sehingga tanda tangan lama tidak cocok lagi.' },
+        { id: 'l2-07-q3', q: 'Apa itu nonce pada tanda tangan ECDSA?', options: ['Angka yang dicari penambang', 'Angka sekali pakai yang tidak boleh diulang atau bisa ditebak', 'Nomor urut blok', 'Bagian dari alamat'], answer: 1, explain: 'Nonce ECDSA rahasia dan sekali pakai, beda dengan nonce di header blok.' },
+        { id: 'l2-07-q4', q: 'Seseorang menyalin tanda tangan sah dari transaksi A dan menempelkannya ke transaksi B yang berbeda isinya. Apa hasilnya?', options: ['Transaksi B lolos', 'Transaksi B ditolak karena tanda tangan tidak cocok dengan isinya', 'Transaksi A dibatalkan', 'Kunci publik berubah'], answer: 1, explain: 'Tanda tangan terikat pada isi yang ditandatangani, jadi tidak bisa dipindah.', application: true },
+      ],
+      labs: ['lab-signature'], glossary: ['g-tanda-tangan', 'g-kunci-privat', 'g-kunci-publik'], sources: ['src-rfc6979', 'src-bips'],
+    },
+
+    /* ===================== LEVEL 3 ===================== */
+    {
+      id: 'l3-01', slug: 'blockchain-dan-blok', level: 3, order: 1, title: 'Blockchain dan blok', minutes: 10,
+      objectives: ['Menjelaskan isi sebuah blok secara garis besar.', 'Menjelaskan bagaimana blok saling terkait lewat hash.', 'Menjelaskan kenapa mengubah blok lama merusak blok sesudahnya.'],
+      prerequisites: ['l2-07'],
+      hook: 'Blockchain bukan satu file raksasa. Ia adalah daftar blok, dan tiap blok memuat sidik jari dari blok di depannya.',
+      sections: [
+        { h: 'Blok adalah kumpulan transaksi', p: ['Sebuah **blok** memuat header dan daftar transaksi. Penambang menyusun blok dari transaksi yang mereka pilih, lalu mencoba membuatnya memenuhi syarat proof of work.', 'Transaksi pertama di tiap blok adalah transaksi coinbase, yang menciptakan hadiah blok untuk penambangnya.'] },
+        { h: 'Rantai lewat hash', p: ['Header tiap blok memuat hash header blok sebelumnya. Dengan begitu tiap blok menunjuk ke induknya dan seluruhnya membentuk rantai yang berurutan.', 'Blok paling pertama, blok genesis, tidak punya induk.'], visual: 'chain' },
+        { h: 'Mengubah masa lalu itu mahal', p: ['Jika isi blok lama diubah, hash header blok itu berubah. Blok sesudahnya menyimpan hash lama, jadi tautannya putus dan semua blok sesudahnya tidak lagi valid.', 'Untuk menyamarkan perubahan, seseorang harus mengerjakan ulang proof of work blok itu dan semua blok sesudahnya. Itulah yang membuat riwayat sulit diubah. Coba di lab Mengubah blockchain.'] },
+      ],
+      technical: { title: 'Versi teknis: bagian blok', p: ['Blok terdiri dari header 80 byte dan daftar transaksi yang diawali jumlah transaksi. Header berisi akar Merkle dari semua transaksi, sehingga mengubah satu transaksi mengubah akar Merkle, lalu hash header.', 'ID sebuah blok adalah hash SHA-256d dari headernya saja, bukan dari seluruh isi blok.'] },
+      misconceptions: [{ salah: 'Blockchain tidak bisa diubah sama sekali.', benar: 'Data lama bisa saja diubah, tetapi perubahan itu merusak tautan hash dan menuntut pengerjaan ulang proof of work. Yang kita andalkan adalah biaya perubahan itu sangat besar.' }],
+      summary: ['Blok memuat header dan daftar transaksi.', 'Tiap header menyimpan hash header blok sebelumnya, membentuk rantai.', 'Mengubah blok lama merusak tautan semua blok sesudahnya.'],
+      quiz: [
+        { id: 'l3-01-q1', q: 'Apa yang menghubungkan satu blok ke blok sebelumnya?', options: ['Nomor urut saja', 'Hash header blok sebelumnya yang disimpan di header', 'Kunci publik penambang', 'Alamat pengirim'], answer: 1, explain: 'Header menyimpan hash header induk.' },
+        { id: 'l3-01-q2', q: 'Blok mana yang tidak punya blok sebelumnya?', options: ['Blok coinbase', 'Blok genesis', 'Blok terbaru', 'Blok kosong'], answer: 1, explain: 'Blok genesis adalah awal rantai.' },
+        { id: 'l3-01-q3', q: 'Transaksi di blok 100 diubah diam-diam. Apa akibat pada blok 101?', options: ['Tidak ada akibat', 'Tautan hash blok 101 tidak cocok lagi', 'Blok 101 ikut berubah otomatis dan tetap valid', 'Blok 101 dihapus oleh jaringan'], answer: 1, explain: 'Hash header blok 100 berubah sehingga hash induk yang tersimpan di blok 101 tidak cocok.', application: true },
+      ],
+      labs: ['lab-tamper'], glossary: ['g-blok', 'g-hash', 'g-header-blok'], sources: ['src-whitepaper', 'src-devdocs'],
+    },
+    {
+      id: 'l3-02', slug: 'block-header', level: 3, order: 2, title: 'Block header', minutes: 10,
+      objectives: ['Menyebut enam bidang header 80 byte.', 'Menjelaskan peran nonce dan bits.', 'Membedakan hash header blok dari akar Merkle dan TXID.'],
+      prerequisites: ['l3-01'],
+      hook: 'Seluruh pekerjaan penambang tertuju pada 80 byte saja. Isi blok yang lain terikat ke header itu lewat satu nilai: akar Merkle.',
+      sections: [
+        { h: 'Enam bidang', p: ['Header berisi: **versi**, **hash blok sebelumnya**, **akar Merkle**, **waktu**, **bits**, dan **nonce**. Totalnya 80 byte.', 'Bits adalah penulisan padat dari target kesulitan. Nonce adalah bidang yang diubah-ubah penambang untuk mencari hash yang memenuhi target.'], visual: 'header' },
+        { h: 'Hash header harus di bawah target', p: ['Sebuah blok valid jika hash header, dibaca sebagai bilangan, lebih kecil dari target yang ditentukan bits. Makin kecil targetnya, makin sulit dicari.', 'Tidak ada aturan tetap seperti "harus diawali empat nol". Hash yang valid bisa punya jumlah nol di depan yang berbeda, tergantung target saat itu.'] },
+        { h: 'Empat nama yang sering tertukar', p: ['**Hash header blok** adalah ID blok. **Akar Merkle** adalah ringkasan semua transaksi di blok. **TXID** adalah ID satu transaksi. **Tanda tangan** adalah bukti izin pada satu input.', 'Keempatnya hasil perhitungan berbeda dengan fungsi berbeda. Jangan memakai satu nama untuk semuanya.'] },
+      ],
+      technical: { title: 'Versi teknis: susunan byte', p: ['Urutan bidang: versi (4 byte), hash blok sebelumnya (32 byte), akar Merkle (32 byte), waktu (4 byte), bits (4 byte), nonce (4 byte). Bilangan kecil ditulis little-endian, dan hash biasa ditampilkan dengan urutan byte dibalik.', 'Karena nonce hanya 4 byte, ruang pencariannya terbatas. Penambang juga mengubah bidang lain, misalnya data di transaksi coinbase yang mengubah akar Merkle, untuk memperluas ruang pencarian. Spesifikasi ada di dokumentasi pengembang.'] },
+      misconceptions: [{ salah: 'Hash blok yang valid harus selalu diawali jumlah nol tertentu, misalnya empat nol.', benar: 'Syaratnya adalah nilai hash lebih kecil dari target. Jumlah nol di depan hanya akibat dari nilai yang kecil dan berbeda-beda per target.' }],
+      summary: ['Header berisi versi, hash blok sebelumnya, akar Merkle, waktu, bits, dan nonce, total 80 byte.', 'Blok valid jika hash header lebih kecil dari target dari bits.', 'Hash header, akar Merkle, TXID, dan tanda tangan adalah hal yang berbeda.'],
+      quiz: [
+        { id: 'l3-02-q1', q: 'Mana yang BUKAN bidang header blok?', options: ['Nonce', 'Akar Merkle', 'Tanda tangan transaksi', 'Bits'], answer: 2, explain: 'Tanda tangan ada di input transaksi, bukan di header blok.' },
+        { id: 'l3-02-q2', q: 'Apa syarat hash header agar blok memenuhi proof of work?', options: ['Diawali tepat empat nol', 'Lebih kecil dari target', 'Berakhiran angka genap', 'Sama dengan akar Merkle'], answer: 1, explain: 'Hash dibaca sebagai bilangan dan harus lebih kecil dari target.' },
+        { id: 'l3-02-q3', q: 'Berapa ukuran header blok Bitcoin?', options: ['32 byte', '64 byte', '80 byte', '256 byte'], answer: 2, explain: 'Enam bidang dengan total 80 byte menurut dokumentasi pengembang.' },
+        { id: 'l3-02-q4', q: 'Kamu ingin menunjuk ID sebuah blok untuk temanmu. Nilai mana yang kamu berikan?', options: ['Akar Merkle blok', 'Hash header blok', 'TXID transaksi pertama', 'Nonce'], answer: 1, explain: 'ID blok adalah hash SHA-256d dari headernya.', application: true },
+      ],
+      labs: ['lab-tamper'], glossary: ['g-header-blok', 'g-merkle', 'g-hash'], sources: ['src-devdocs', 'src-whitepaper'],
+    },
+    {
+      id: 'l3-03', slug: 'pohon-merkle', level: 3, order: 3, title: 'Pohon Merkle', minutes: 10,
+      objectives: ['Menjelaskan bagaimana akar Merkle dibangun dari TXID.', 'Menjelaskan kenapa satu akar bisa mewakili semua transaksi.', 'Memahami ide bukti keanggotaan transaksi.'],
+      prerequisites: ['l3-02'],
+      hook: 'Satu blok bisa memuat ribuan transaksi, tetapi header hanya menyimpan satu nilai 32 byte. Pohon Merkle yang menjembatani keduanya.',
+      sections: [
+        { h: 'Menyusun pohon', p: ['Mulai dari hash tiap transaksi sebagai daun. Gabungkan dua daun bersebelahan lalu hash hasilnya menjadi satu simpul di level atas. Ulangi sampai tersisa satu nilai, yaitu **akar Merkle**.', 'Jika jumlah simpul di sebuah level ganjil, simpul terakhir digandakan untuk berpasangan.'], visual: 'merkle' },
+        { h: 'Satu perubahan menjalar ke atas', p: ['Mengubah satu transaksi mengubah daunnya, lalu semua simpul di jalur menuju akar, dan akhirnya akar Merkle. Karena akar tersimpan di header, perubahan itu ikut mengubah hash header.', 'Itulah cara header menjamin keutuhan semua transaksi tanpa memuat semuanya.'] },
+        { h: 'Bukti keanggotaan', p: ['Untuk membuktikan bahwa sebuah transaksi ada di blok, cukup tunjukkan hash saudara di tiap level sepanjang jalur ke akar. Penerima menghitung ulang ke atas dan membandingkan dengan akar di header.', 'Jumlah hash yang ditunjukkan hanya bertambah satu setiap jumlah transaksi berlipat dua, jadi buktinya pendek.'] },
+      ],
+      technical: { title: 'Versi teknis: detail perhitungan', p: ['Daun adalah TXID, yaitu SHA-256d dari serialisasi transaksi tanpa data saksi. Simpul induk adalah SHA-256d dari gabungan byte dua simpul anak. Ada komitmen terpisah untuk WTXID (yang memasukkan data saksi) di dalam transaksi coinbase pada blok yang memakai SegWit.', 'Pola menggandakan simpul ganjil pernah menimbulkan kerentanan duplikasi transaksi (CVE-2012-2459) yang kini ditangani dengan aturan validasi. Rincian ada di dokumentasi Bitcoin Core.'] },
+      misconceptions: [{ salah: 'Akar Merkle adalah hash dari seluruh blok.', benar: 'Akar Merkle hanya meringkas daftar transaksi. Hash blok (ID blok) dihitung dari header 80 byte yang memuat akar itu.' }],
+      summary: ['Akar Merkle dibangun dengan menggabung dan meng-hash pasangan secara berulang.', 'Mengubah satu transaksi mengubah akar Merkle dan hash header.', 'Bukti keanggotaan hanya perlu hash saudara sepanjang jalur ke akar.'],
+      quiz: [
+        { id: 'l3-03-q1', q: 'Apa yang menjadi daun pohon Merkle di blok Bitcoin?', options: ['Alamat penerima', 'Hash tiap transaksi (TXID)', 'Nonce', 'Kunci publik'], answer: 1, explain: 'Daun adalah TXID dari tiap transaksi di blok.' },
+        { id: 'l3-03-q2', q: 'Jika jumlah simpul pada suatu level ganjil, apa yang dilakukan?', options: ['Simpul terakhir dihapus', 'Simpul terakhir digandakan untuk berpasangan', 'Blok ditolak', 'Level itu dilewati'], answer: 1, explain: 'Simpul terakhir dipasangkan dengan salinannya.' },
+        { id: 'l3-03-q3', q: 'Kamu sedang memeriksa apakah sebuah transaksi ada di sebuah blok, tanpa mengunduh seluruh blok. Apa yang kamu butuhkan?', options: ['Semua transaksi di blok', 'Hash saudara sepanjang jalur ke akar dan akar Merkle dari header', 'Hanya nonce', 'Kunci privat penambang'], answer: 1, explain: 'Bukti Merkle dan akar di header cukup untuk memeriksa keanggotaan.', application: true },
+      ],
+      labs: [], glossary: ['g-merkle', 'g-hash', 'g-blok'], sources: ['src-devdocs', 'src-masteringbitcoin'],
+    },
+    {
+      id: 'l3-04', slug: 'node', level: 3, order: 4, title: 'Node', minutes: 8,
+      objectives: ['Menjelaskan apa yang dikerjakan sebuah node.', 'Membedakan node penuh, node pruned, dan klien ringan.', 'Menjelaskan mempool sebagai antrean lokal.'],
+      prerequisites: ['l3-03'],
+      hook: 'Node tidak menunggu dipercaya. Ia memeriksa sendiri tiap blok dan transaksi, dan menolak yang melanggar aturan.',
+      sections: [
+        { h: 'Apa yang dikerjakan node', p: ['Sebuah **node** menjalankan perangkat lunak Bitcoin: terhubung ke peer, menerima transaksi dan blok, memeriksanya terhadap aturan konsensus, lalu meneruskan yang valid.', 'Node penuh memeriksa semua aturan sendiri, tanpa bergantung pada pihak lain.'] },
+        { h: 'Tidak semua node menyimpan semuanya', p: ['Node **pruned** tetap memeriksa seluruh rantai saat sinkronisasi, tetapi membuang data blok lama untuk menghemat ruang. Ia hanya menyimpan bagian terbaru, jadi tidak semua node menyimpan seluruh rantai.', 'Klien ringan bahkan tidak memeriksa semuanya, melainkan meminta bukti dari node lain.'] },
+        { h: 'Mempool itu lokal', p: ['**Mempool** adalah antrean transaksi valid yang belum masuk blok menurut sebuah node. Tiap node punya mempool sendiri dengan aturan dan batas memori sendiri.', 'Jadi tidak ada satu mempool global. Dua node bisa menampilkan daftar yang berbeda pada waktu yang sama.'] },
+      ],
+      technical: { title: 'Versi teknis: aturan konsensus dan kebijakan', p: ['Aturan konsensus menentukan sah tidaknya blok dan transaksi, dan harus sama di semua node agar tidak terjadi perpecahan. Kebijakan relay (standardness) lebih ketat dan bisa diatur tiap operator, misalnya batas fee minimum untuk masuk mempool.', 'Bitcoin Core adalah implementasi referensi, tetapi ada implementasi lain yang mengikuti aturan konsensus yang sama.'] },
+      misconceptions: [{ salah: 'Semua node Bitcoin menyimpan seluruh data blok sejak 2009.', benar: 'Node pruned membuang blok lama setelah memeriksanya. Hanya node arsip yang menyimpan semuanya.' }],
+      summary: ['Node memeriksa sendiri blok dan transaksi, lalu meneruskan yang valid.', 'Node pruned memeriksa semua tetapi hanya menyimpan data terbaru.', 'Mempool bersifat lokal, tiap node punya sendiri.'],
+      quiz: [
+        { id: 'l3-04-q1', q: 'Apa itu mempool?', options: ['Daftar semua blok', 'Antrean transaksi valid yang belum masuk blok, milik masing-masing node', 'Basis data global bersama', 'Kumpulan kunci publik'], answer: 1, explain: 'Mempool lokal per node, bukan basis data global.' },
+        { id: 'l3-04-q2', q: 'Apa ciri node pruned?', options: ['Tidak memeriksa blok', 'Memeriksa blok tetapi menghapus data blok lama', 'Hanya menyimpan header', 'Menyimpan kunci privat pengguna'], answer: 1, explain: 'Pruned tetap memverifikasi, namun hemat penyimpanan.' },
+        { id: 'l3-04-q3', q: 'Transaksimu terlihat di mempool satu penjelajah blok tetapi tidak di penjelajah lain. Penjelasan terbaik?', options: ['Transaksi pasti palsu', 'Tiap node punya mempool sendiri dengan kebijakan dan waktu penerimaan berbeda', 'Salah satu penjelajah berbohong', 'Transaksi sudah dikonfirmasi'], answer: 1, explain: 'Mempool bersifat lokal dan berbeda antar node.', application: true },
+      ],
+      labs: [], glossary: ['g-node', 'g-mempool', 'g-p2p'], sources: ['src-bitcoincore', 'src-devdocs'],
+    },
+    {
+      id: 'l3-05', slug: 'relay-p2p', level: 3, order: 5, title: 'Relay peer-to-peer: transaksi dan blok', minutes: 9,
+      objectives: ['Menelusuri perjalanan transaksi dari dompet sampai blok.', 'Menjelaskan bagaimana blok baru menyebar.', 'Menjelaskan apa yang terjadi bila dua blok ditemukan hampir bersamaan.'],
+      prerequisites: ['l3-04'],
+      hook: 'Saat kamu menekan kirim di dompet, transaksimu tidak langsung masuk ke sebuah buku besar. Ia mulai dari satu node dan merambat ke node lain.',
+      sections: [
+        { h: 'Transaksi merambat', p: ['Dompet mengirim transaksi ke satu atau beberapa node. Tiap node memeriksa, memasukkannya ke mempool lokal jika valid dan memenuhi kebijakan, lalu menawarkannya ke peer lain.', 'Penambang memilih transaksi dari mempool mereka untuk dimasukkan ke blok kandidat.'], visual: 'p2p' },
+        { h: 'Blok merambat', p: ['Penambang yang menemukan blok valid menyiarkannya ke peer. Tiap node memeriksa blok itu penuh sebelum meneruskannya. Blok yang tidak valid dibuang, dan node tidak meneruskannya.', 'Setelah blok diterima, node membuang dari mempool transaksi yang sudah termasuk di dalamnya.'] },
+        { h: 'Dua blok bersamaan', p: ['Kadang dua penambang menemukan blok pada tinggi yang sama hampir bersamaan. Sebagian node melihat satu versi lebih dulu, sebagian lagi versi lain, dan sementara waktu rantai bercabang.', 'Cabang ini selesai ketika blok berikutnya dibangun di salah satu sisi, sehingga rantai itu punya kerja terakumulasi lebih besar dan dipilih node. Pembahasan lengkap ada di Level 5.'] },
+      ],
+      technical: { title: 'Versi teknis: pesan jaringan', p: ['Node memberi tahu peer tentang objek baru dengan pesan inv yang berisi hash. Peer yang belum punya meminta isinya dengan getdata. Blok juga bisa disebarkan lewat compact block untuk menghemat bandwidth.', 'Penerima memeriksa header dulu (termasuk proof of work), lalu memeriksa semua transaksi sebelum menerima blok sebagai valid.'] },
+      misconceptions: [{ salah: 'Transaksi yang sudah dikirim dompet otomatis dikonfirmasi dalam hitungan detik.', benar: 'Transaksi baru menunggu di mempool sampai penambang memasukkannya ke blok. Waktunya tidak pasti dan bergantung fee serta kondisi jaringan.' }],
+      summary: ['Transaksi dan blok menyebar dari node ke node setelah diperiksa.', 'Blok tidak valid dibuang, bukan diteruskan.', 'Dua blok bersamaan menimbulkan cabang sementara yang diselesaikan blok berikutnya.'],
+      quiz: [
+        { id: 'l3-05-q1', q: 'Apa yang dilakukan node saat menerima transaksi baru?', options: ['Langsung memasukkannya ke blok', 'Memeriksa, menyimpan di mempool jika valid, lalu menawarkan ke peer', 'Menghapusnya', 'Menandatanganinya ulang'], answer: 1, explain: 'Validasi, mempool lokal, lalu relay.' },
+        { id: 'l3-05-q2', q: 'Jika sebuah blok tidak valid menurut aturan, apa yang dilakukan node?', options: ['Meneruskan ke peer', 'Menolak dan tidak meneruskannya', 'Memperbaikinya', 'Mengirim ke penambang'], answer: 1, explain: 'Blok tidak valid tidak diterima dan tidak diteruskan.' },
+        { id: 'l3-05-q3', q: 'Dua penambang menemukan blok pada tinggi yang sama. Bagaimana perpecahan ini biasanya selesai?', options: ['Pengembang memilih satu', 'Blok berikutnya dibangun di satu sisi, rantai itu jadi lebih berat dan dipilih', 'Kedua blok digabung', 'Jaringan dihentikan'], answer: 1, explain: 'Rantai dengan kerja terakumulasi terbanyak menjadi pilihan node.', application: true },
+      ],
+      labs: [], glossary: ['g-node', 'g-mempool', 'g-blok'], sources: ['src-devdocs', 'src-whitepaper'],
+    },
+    {
+      id: 'l3-06', slug: 'wallet-alamat-script', level: 3, order: 6, title: 'Wallet, alamat, dan script output', minutes: 10,
+      objectives: ['Menjelaskan bahwa wallet menyimpan kunci, bukan koin.', 'Menjelaskan asal alamat dari hash kunci publik.', 'Menjelaskan bahwa output dikunci oleh script.'],
+      prerequisites: ['l3-05'],
+      hook: 'Koin tidak tersimpan di dompetmu seperti uang di saku. Dompet menyimpan kunci yang membuktikan kamu boleh membelanjakan output tertentu di rantai.',
+      sections: [
+        { h: 'Wallet menyimpan kunci', p: ['**Wallet** adalah perangkat lunak atau perangkat keras yang mengelola kunci, membuat alamat, dan menyusun serta menandatangani transaksi. Dana tercatat sebagai output di blockchain, bukan di wallet.', 'Kehilangan akses ke kunci berarti kehilangan kemampuan membelanjakan, walau output tetap ada di rantai.'] },
+        { h: 'Alamat berasal dari hash kunci publik', p: ['**Alamat** bukan kunci publik itu sendiri. Pada format klasik, alamat dibuat dari hash kunci publik (SHA-256 lalu RIPEMD-160), ditambah prefiks versi dan checksum, lalu dikodekan dalam Base58Check. Format lain memakai Bech32.', 'Checksum membantu mendeteksi salah ketik. Satu alamat sebaiknya dipakai sekali untuk menerima, demi privasi.'] },
+        { h: 'Output dikunci script', p: ['Setiap output membawa **script** pengunci yang mendefinisikan syarat untuk membelanjakannya. Syarat paling umum: tunjukkan kunci publik yang hash-nya cocok dan tanda tangan yang sah dari kunci itu.', 'Bitcoin bersifat pseudonim, bukan anonim: alamat tidak memuat nama, tetapi seluruh riwayatnya terlihat publik dan bisa dikaitkan ke identitas lewat banyak cara.'] },
+      ],
+      technical: { title: 'Versi teknis: jenis output umum', p: ['P2PKH mengunci ke hash kunci publik (script mengecek hash dan memeriksa tanda tangan). P2WPKH adalah versi SegWit yang menaruh data tanda tangan di bagian saksi. P2TR (Taproot) memakai kunci Schnorr dan mendukung cabang script tersembunyi.', 'Script Bitcoin adalah bahasa berbasis tumpukan yang sengaja tidak lengkap secara Turing. Spesifikasi alamat dan script ada di BIP dan dokumentasi pengembang.'] },
+      misconceptions: [{ salah: 'Alamat Bitcoin sama dengan kunci publik.', benar: 'Alamat klasik adalah hash dari kunci publik dengan checksum. Kunci publiknya baru terlihat saat dana dibelanjakan.' }],
+      summary: ['Wallet menyimpan kunci dan menyusun transaksi, bukan menyimpan koin.', 'Alamat berasal dari hash kunci publik dengan checksum.', 'Output dikunci script, dan Bitcoin bersifat pseudonim, bukan anonim.'],
+      quiz: [
+        { id: 'l3-06-q1', q: 'Apa yang sebenarnya disimpan sebuah wallet?', options: ['Koin Bitcoin', 'Kunci yang dipakai membelanjakan output', 'Seluruh blockchain', 'Daftar mempool'], answer: 1, explain: 'Dana ada di rantai sebagai output, wallet menyimpan kunci.' },
+        { id: 'l3-06-q2', q: 'Dari mana alamat P2PKH klasik berasal?', options: ['Kunci privat langsung', 'Hash dari kunci publik ditambah checksum', 'Nonce blok', 'Akar Merkle'], answer: 1, explain: 'Hash kunci publik dengan prefiks versi dan checksum, dikodekan Base58Check.' },
+        { id: 'l3-06-q3', q: 'Pernyataan mana yang tepat tentang privasi Bitcoin?', options: ['Anonim penuh', 'Pseudonim: riwayat publik, identitas bisa terungkap lewat tautan lain', 'Tidak ada yang bisa melihat transaksi', 'Hanya penambang yang bisa melihat'], answer: 1, explain: 'Alamat tidak memuat nama, tetapi riwayat terlihat publik.' },
+        { id: 'l3-06-q4', q: 'Dompetmu rusak, tetapi kamu punya cadangan kunci yang benar. Apa yang terjadi pada dana di rantai?', options: ['Hilang selamanya', 'Tetap ada, dan bisa dibelanjakan lagi dengan kunci dari cadangan', 'Pindah ke penambang', 'Dikembalikan bank'], answer: 1, explain: 'Dana ada di rantai sebagai output. Kunci yang sama memberi izin membelanjakannya.', application: true },
+      ],
+      labs: [], glossary: ['g-alamat', 'g-script', 'g-kunci-publik', 'g-kunci-privat'], sources: ['src-bips', 'src-masteringbitcoin'],
+    },
+  ];
+
+  const glossary = [
+    { id: 'g-jaringan', term: 'Jaringan', definition: 'Sekumpulan komputer yang saling terhubung dan bertukar data dalam bentuk paket.', related: ['g-p2p'] },
+    { id: 'g-terpusat', term: 'Sistem terpusat', definition: 'Sistem di mana satu pihak memegang catatan dan menentukan aturan.', related: ['g-terdesentralisasi'] },
+    { id: 'g-terdesentralisasi', term: 'Sistem terdesentralisasi', definition: 'Sistem di mana banyak pihak menjalankan aturan yang sama tanpa satu penentu tunggal.', related: ['g-terpusat', 'g-p2p'] },
+    { id: 'g-p2p', term: 'Peer-to-peer (P2P)', aliases: ['peer to peer', 'p2p'], definition: 'Model jaringan di mana tiap peserta berperan setara dan terhubung langsung ke peserta lain, bukan ke satu server.', related: ['g-node', 'g-jaringan'] },
+    { id: 'g-kriptografi', term: 'Kriptografi', definition: 'Ilmu dan teknik untuk menjaga kerahasiaan, keutuhan, dan keaslian data.', related: ['g-hash', 'g-tanda-tangan'] },
+    { id: 'g-hash', term: 'Fungsi hash', aliases: ['hash', 'sha-256', 'sha256'], definition: 'Fungsi yang mengubah data apa pun menjadi nilai berukuran tetap. Input yang sama selalu memberi hasil sama, dan perubahan kecil memberi hasil yang berbeda total. Hash bukan enkripsi.', related: ['g-header-blok', 'g-merkle'] },
+    { id: 'g-kunci-privat', term: 'Kunci privat', definition: 'Angka acak rahasia yang dipakai membuat tanda tangan. Siapa pun yang memegangnya bisa membelanjakan dana yang terkunci ke kunci publik pasangannya.', related: ['g-kunci-publik', 'g-tanda-tangan'] },
+    { id: 'g-kunci-publik', term: 'Kunci publik', definition: 'Nilai yang dihitung dari kunci privat dan boleh dibagikan. Dipakai memeriksa tanda tangan yang dibuat kunci privat pasangannya.', related: ['g-kunci-privat', 'g-alamat'] },
+    { id: 'g-tanda-tangan', term: 'Tanda tangan digital', aliases: ['signature', 'ecdsa'], definition: 'Bukti matematis bahwa pemegang kunci privat menyetujui sebuah pesan. Terikat pada isi pesan, jadi perubahan sekecil apa pun membuat pemeriksaan gagal.', related: ['g-kunci-privat', 'g-kunci-publik'] },
+    { id: 'g-blok', term: 'Blok', definition: 'Kumpulan transaksi yang dikemas bersama header 80 byte dan ditambahkan ke rantai setelah memenuhi syarat proof of work.', related: ['g-header-blok', 'g-merkle'] },
+    { id: 'g-header-blok', term: 'Block header', aliases: ['header blok'], definition: 'Bagian 80 byte dari blok: versi, hash blok sebelumnya, akar Merkle, waktu, bits, dan nonce. Hash header menjadi ID blok.', related: ['g-blok', 'g-merkle', 'g-hash'] },
+    { id: 'g-merkle', term: 'Pohon Merkle', aliases: ['akar merkle', 'merkle root'], definition: 'Struktur pohon hash yang meringkas semua transaksi sebuah blok menjadi satu nilai, yaitu akar Merkle, yang disimpan di header.', related: ['g-header-blok', 'g-hash'] },
+    { id: 'g-node', term: 'Node', definition: 'Komputer yang menjalankan perangkat lunak Bitcoin, memeriksa blok dan transaksi terhadap aturan, dan meneruskannya ke peer.', related: ['g-mempool', 'g-p2p'] },
+    { id: 'g-alamat', term: 'Alamat', aliases: ['address'], definition: 'Penanda tujuan pembayaran. Pada format klasik berasal dari hash kunci publik ditambah checksum, bukan kunci publik itu sendiri.', related: ['g-kunci-publik', 'g-script'] },
+    { id: 'g-script', term: 'Script', aliases: ['script output', 'scriptPubKey'], definition: 'Program kecil pada sebuah output yang mendefinisikan syarat untuk membelanjakannya.', related: ['g-alamat'] },
+  ];
+
+  D.addLessons(lessons);
+  D.addGlossary(glossary);
+})(typeof self !== 'undefined' ? self : globalThis);
